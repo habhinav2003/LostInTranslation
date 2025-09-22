@@ -1,79 +1,51 @@
 package translation;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
-/**
- * This class provides the services of: <br/>
- * - converting language codes to their names <br/>
- * - converting language names to their codes
- */
 public class LanguageCodeConverter {
 
     private final Map<String, String> languageCodeToLanguage = new HashMap<>();
     private final Map<String, String> languageToLanguageCode = new HashMap<>();
 
-    /**
-     * Default constructor that loads the language codes from "language-codes.txt"
-     * in the resources folder.
-     */
     public LanguageCodeConverter() {
-        this("language-codes.txt");
+        loadLanguages("language-codes.txt");
     }
 
-    /**
-     * Overloaded constructor that allows us to specify the filename to load the language code data from.
-     * @param filename the name of the file in the resources folder to load the data from
-     * @throws RuntimeException if the resources file can't be loaded properly
-     */
-    public LanguageCodeConverter(String filename) {
+    private void loadLanguages(String filename) {
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream(filename);
+             BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
 
-        try {
-            List<String> lines = Files.readAllLines(Paths.get(getClass()
-                    .getClassLoader().getResource(filename).toURI()));
-
-            Iterator<String> iterator = lines.iterator();
-            iterator.next(); // skip the first line
-            while (iterator.hasNext()) {
-                String line = iterator.next();
-                // TODO Task A: use line to populate the instance variables
+            // Skip header row
+            String line = reader.readLine();
+            while ((line = reader.readLine()) != null) {
+                // Split only on the **last tab** in case language name contains tabs
+                int tabIndex = line.lastIndexOf('\t');
+                if (tabIndex != -1) {
+                    String language = line.substring(0, tabIndex).trim();
+                    String code = line.substring(tabIndex + 1).trim();
+                    languageCodeToLanguage.put(code, language);
+                    languageToLanguageCode.put(language, code);
+                }
             }
 
-        } catch (IOException | URISyntaxException ex) {
-            throw new RuntimeException(ex);
+        } catch (IOException | NullPointerException ex) {
+            throw new RuntimeException("Error loading language codes from file: " + filename, ex);
         }
     }
 
-    /**
-     * Return the name of the language for the given language code.
-     * @param code the 2-letter language code
-     * @return the name of the language corresponding to the code
-     */
     public String fromLanguageCode(String code) {
-        // TODO Task A: update this code to use the correct instance variable to return the appropriate value
-        return code;
+        return languageCodeToLanguage.get(code);
     }
 
-    /**
-     * Return the code of the language for the given language name.
-     * @param language the name of the language
-     * @return the 2-letter code of the language
-     */
-    public String fromLanguage(String language) {
-        // TODO Task A: update this code to use the correct instance variable to return the appropriate value
-        return language;
+    public String toLanguageCode(String language) {
+        return languageToLanguageCode.get(language);
     }
 
-    /**
-     * Return how many languages are included in this language code converter.
-     * @return how many languages are included in this language code converter.
-     */
     public int getNumLanguages() {
         return languageCodeToLanguage.size();
     }

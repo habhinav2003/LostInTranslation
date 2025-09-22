@@ -3,10 +3,6 @@ package translation;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO Task 1: as a team, update this class so that it also supports the Spanish language code "es" and
-//              one more language code of your team's choice. Submit a PR once the code is working and
-//              make sure everyone has a local working copy of the code.
-
 /**
  * An implementation of the Translator interface that translates
  * the country code "can" to several languages.
@@ -14,6 +10,7 @@ import java.util.List;
 public class CanadaTranslator implements Translator {
 
     public static final String CANADA = "can";
+
     /**
      * Return the language code for all languages whose translations are
      * available for translating "can".
@@ -22,7 +19,7 @@ public class CanadaTranslator implements Translator {
      */
     @Override
     public List<String> getLanguageCodes() {
-        return new ArrayList<>(List.of("de", "en", "zh"));
+        return new ArrayList<>(List.of("de", "en", "zh", "es", "fr"));
     }
 
     /**
@@ -45,20 +42,22 @@ public class CanadaTranslator implements Translator {
      */
     @Override
     public String translate(String countryCode, String languageCode) {
-        if (!countryCode.equals(CANADA)) {
+        if (!CANADA.equals(countryCode)) {
             return null;
         }
-        if (languageCode.equals("de")) {
-            return "Kanada";
-        }
-        else if (languageCode.equals("en")) {
-            return "Canada";
-        }
-        else if ("zh".equals(languageCode)) {
-            return "加拿大";
-        }
-        else {
-            return null;
+        switch (languageCode) {
+            case "de":
+                return "Kanada";
+            case "en":
+                return "Canada";
+            case "zh":
+                return "加拿大";
+            case "es":
+                return "Canadá";
+            case "fr":
+                return "Canada"; // French translation is the same as English
+            default:
+                return null;
         }
     }
 }

@@ -15,6 +15,6 @@ public class LanguageCodeConverterTest {
     @Test
     public void fromLanguageCodeAllLoaded() {
         LanguageCodeConverter converter = new LanguageCodeConverter();
-        assertEquals(184, converter.getNumLanguages());
+        assertEquals(184, converter.getNumLanguages()); ;
     }
 }
